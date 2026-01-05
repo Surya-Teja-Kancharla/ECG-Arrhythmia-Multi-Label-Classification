@@ -1,0 +1,47 @@
+# -------------------------------
+# Core Scientific Stack
+# -------------------------------
+numpy>=1.23
+pandas>=1.5
+scipy>=1.9
+matplotlib>=3.6
+seaborn>=0.12
+
+# -------------------------------
+# Machine Learning & Metrics
+# -------------------------------
+scikit-learn>=1.2
+imbalanced-learn>=0.10
+
+# -------------------------------
+# Deep Learning (CUDA-enabled)
+# -------------------------------
+torch>=2.0
+torchvision>=0.15
+torchaudio>=2.0
+
+# NOTE:
+# CUDA support is provided by the installed PyTorch build.
+# Install CUDA-specific wheels via:
+# https://pytorch.org/get-started/locally/
+
+# -------------------------------
+# ECG / Biomedical Signal Processing
+# -------------------------------
+wfdb>=4.1
+
+# -------------------------------
+# Progress Bars / UX
+# -------------------------------
+tqdm>=4.65
+
+# -------------------------------
+# Jupyter Environment (Optional but Used)
+# -------------------------------
+jupyter>=1.0
+ipykernel>=6.20
+
+# -------------------------------
+# Deployment
+# -------------------------------
+streamlit
