@@ -31,7 +31,7 @@ LABELS = ["AF","LBBB","RBBB","PAC","PVC","STD","STE","Normal","Other"]
 
 THRESHOLDS = np.array([0.45,0.40,0.40,0.35,0.35,0.50,0.50,0.60,0.30])
 
-MODEL_PATH = r"E:\Ignite Hack\ecg_model_v1.pth"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "ecg_model_v1.pth")
 SAMPLING_RATE = 250
 WINDOW_SECONDS = 10
 STEP_SECONDS = 5
