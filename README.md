@@ -1,120 +1,138 @@
-# 🫀 Multi-Label ECG Arrhythmia Detection & Real-Time Monitoring
+# 🫀 ECG Decision Support System (ECG-DSS)
+
+### Multi-Label ECG Arrhythmia Detection & Real-Time Monitoring System
+
+---
 
 ## Project Overview
 
-This project implements an **end-to-end multi-label ECG arrhythmia detection system**, designed and built during a time-bound AI/ML hackathon.  
-It spans the full lifecycle from **EDA and data preprocessing** to **deep learning model training**, **multi-label validation**, **threshold optimization**, and a **real-time clinical monitoring dashboard**.
+ECG-DSS is an **end-to-end deep learning–based clinical decision support system** for **multi-label ECG arrhythmia detection**, developed during a **time-bound AI/ML hackathon**.
 
-The system supports **simultaneous detection of multiple arrhythmias** from 12-lead ECG signals and emphasizes **decision quality, robustness, and clinical interpretability**.
+The project covers the complete lifecycle:
+
+- Exploratory Data Analysis (EDA)
+- ECG signal preprocessing and dataset engineering
+- Deep learning model design and training
+- Multi-label validation and threshold optimization
+- Deployment as a **real-time ECG monitoring dashboard**
+
+The system detects **multiple co-occurring cardiac arrhythmias** from **12-lead ECG signals**, with strong emphasis on **robust decision-making, interpretability, and clinical realism**.
+
+---
+
+## 🔗 Live Demo (Streamlit Deployment)
+
+👉 **Deployed Application:** [**https://ecg-arrhythmia-multi-label-classification.streamlit.app/**](https://ecg-arrhythmia-multi-label-classification.streamlit.app/)
+
+> The live app allows uploading **preprocessed `.pk` ECG files** and simulates real-time multi-label arrhythmia detection with clinical decision support explanations.
+
+---
+
+## Problem Statement
+
+Traditional ECG classifiers assume **single-label outputs**, whereas real-world ECG recordings may exhibit **multiple simultaneous arrhythmias**.
+
+This project addresses:
+
+> **Multi-label cardiac arrhythmia classification from variable-length 12-lead ECG recordings**, explicitly accounting for **class imbalance**, **label co-occurrence**, and **temporal variability**.
 
 ---
 
 ## Supported Arrhythmia Classes (9)
 
-- AF (Atrial Fibrillation)
-- LBBB (Left Bundle Branch Block)
-- RBBB (Right Bundle Branch Block)
-- PAC (Premature Atrial Contractions)
-- PVC (Premature Ventricular Contractions)
-- STD (ST Depression)
-- STE (ST Elevation)
-- Normal
-- Other
+- **AF** — Atrial Fibrillation
+- **LBBB** — Left Bundle Branch Block
+- **RBBB** — Right Bundle Branch Block
+- **PAC** — Premature Atrial Contractions
+- **PVC** — Premature Ventricular Contractions
+- **STD** — ST Depression
+- **STE** — ST Elevation
+- **Normal**
+- **Other**
+
+Each ECG sample may contain **multiple active labels simultaneously**.
 
 ---
 
-## Data Summary
+## Dataset Information
 
-- **Sampling rate:** 250 Hz
-- **Signal length:** Fixed 60-second segments
-- **Format:** Preprocessed `.pk` files (Pandas objects)
-- **Leads:** Standard 12-lead ECG
-- **Labels:** Multi-hot encoded (multi-label)
+### Original Dataset (CPSC 2018)
+
+- **Name:** China Physiological Signal Challenge (CPSC 2018)
+- **Source:** PhysioNet
+- **Link:** [PhysioNet Challenge 2020](https://physionet.org/content/challenge-2020/1.0.2/)
+- **Sampling Rate:** 500 Hz
+- **Duration:** Variable (6–60 seconds)
+- **Leads:** 12-lead ECG
+- **Labels:** Multi-label (9 classes)
+- **Size:** 6,877 clinical ECG recordings
+
+**Reference Paper:** [Frontiers in Physiology Article](https://www.frontiersin.org/articles/10.3389/fphys.2021.678597/full)
+
+### Preprocessed Dataset
+
+- **Source:** Figshare (community-preprocessed)
+- **Link:** [Figshare ECG Data](https://figshare.com/articles/dataset/ECG_data/)
+- **Sampling Rate:** 250 Hz
+- **Duration:** Normalized to 60 seconds
+- **Format:** Ready-to-use signals for deep learning
+
+### Included Sample Files
+
+Due to dataset licensing and size constraints, **only a limited set of preprocessed `.pk` samples** is included under the `samples/` directory **for demo and testing**.
+
+Users must download the **full dataset** from the links above to reproduce training results.
 
 ---
 
 ## PHASE 1 – Exploratory Data Analysis (EDA)
 
-### Key EDA Observations
+### Key Observations
 
-- ECG signals exhibit high temporal variability and lead-specific morphology
-- Class distribution is severely imbalanced, with Normal and AF dominating
-- ~7% of samples contain multiple simultaneous arrhythmias
-- Certain arrhythmias frequently co-occur, justifying multi-label modeling
-- Lead correlations indicate shared cardiac activity while preserving unique patterns
-- Padding and temporal modeling are mandatory for downstream learning
+- High temporal variability and lead-specific ECG morphology
+- Severe class imbalance (Normal and AF dominate)
+- ~7% of ECGs contain **multiple simultaneous arrhythmias**
+- Frequent label co-occurrence justifies multi-label modeling
+- Lead correlations show shared cardiac activity with unique patterns
+- Padding and temporal modeling are mandatory
 
-### Phase 1 Summary
-
-- Verified signal integrity and duration normalization
-- Visualized 12-lead ECG morphology
-- Identified severe class imbalance
-- Quantified multi-label co-occurrence patterns
-- Established need for weighted multi-label learning
-
-> **Note:**  
-> Baseline correction is intentionally disabled by default to avoid altering clinically relevant ST-segment morphology.
+> **Note:** Baseline correction is intentionally disabled to preserve clinically relevant ST-segment morphology.
 
 ---
 
 ## PHASE 2 – Preprocessing & Dataset Engineering
 
-- Signal normalization and resampling to 250 Hz
-- Duration standardization (60 seconds)
-- Label encoding into multi-hot vectors
+- Resampling to 250 Hz
+- Duration normalization to 60 seconds
+- Lead-wise normalization
+- Multi-hot label encoding
 - Memory-efficient `.pk` storage
-- Lazy loading strategy to prevent RAM exhaustion on Windows
+- **Lazy loading** to prevent RAM exhaustion (Windows-safe)
 
 ---
 
 ## PHASE 3 – Model Architecture & Training
 
-### Model Design
+### Model Architecture
 
-- 1D CNN with Residual Blocks (ResNet-style)
-- Temporal feature extraction across all 12 leads
-- Attention pooling to support variable-length modeling
+- 1D CNN with **ResNet-style residual blocks**
+- Temporal feature extraction across 12 leads
+- **Attention pooling** for temporal importance weighting
 - Sigmoid activation for independent label probabilities
 
 ### Training Strategy
 
-- Multi-label classification using **Focal Loss**
-- GPU-accelerated training (CUDA / MPS / CPU fallback)
-- Lazy data loading to scale to thousands of ECG samples
-- Real-time progress tracking with `tqdm`
+- Multi-label learning with **Focal Loss**
+- GPU acceleration (CUDA / MPS / CPU fallback)
+- Lazy dataset loading for scalability
+- Real-time training progress with `tqdm`
 
 ### Evaluation Metrics
 
 - Hamming Loss
-- F1-Score (Macro & Micro)
+- F1 Score (Macro & Micro)
 - Per-class AUC-ROC
-- Subset Accuracy (reported with caution)
-
----
-
-## Why Stratified Splitting Matters (Multi-Label ECG)
-
-Random splits distort rare arrhythmia prevalence and break label co-occurrence structure.
-
-Stratification preserves:
-
-- Per-class prevalence
-- Co-occurrence structure
-- Clinical realism
-
-This project uses **label-aware splitting prior to Phase 3 training**.
-
----
-
-## Cross-Validation Strategy (Multi-Label Aware)
-
-- Full K-fold cross-validation is computationally expensive for ECG
-- We rely on:
-  - Dedicated validation split
-  - Ensemble averaging
-  - Threshold calibration
-
-This achieves variance reduction without violating label dependencies.
+- Subset Accuracy (reported cautiously)
 
 ---
 
@@ -122,19 +140,14 @@ This achieves variance reduction without violating label dependencies.
 
 Phase 4 focuses on **decision quality**, not representation learning.
 
-### Phase 4 Summary
+- Binary Cross-Entropy vs Focal Loss (conceptual comparison)
+- Explicit class imbalance handling
+- Multi-label stratified data splitting
+- Cross-validation strategy explanation
+- **Per-class threshold optimization**
+- Significant post-training metric improvement
 
-- ✓ Loss functions compared conceptually (Binary Cross-Entropy vs Focal Loss)
-- ✓ Class imbalance quantified and addressed
-- ✓ Multi-label stratification justified
-- ✓ Cross-validation strategy explained
-- ✓ Per-class threshold optimization implemented
-- ✓ Significant post-training metric improvement achieved
-
-### Notes on Subset Accuracy
-
-Subset accuracy is intentionally low in multi-label ECG tasks due to its strict definition.  
-After per-class threshold optimization, a measurable improvement is observed, indicating better joint label consistency without retraining the model.
+> Subset accuracy remains inherently low due to its strict definition in multi-label tasks.
 
 ---
 
@@ -142,63 +155,164 @@ After per-class threshold optimization, a measurable improvement is observed, in
 
 ### Features
 
-- Streamlit-based real-time ECG monitoring dashboard
+- Streamlit-based real-time ECG monitoring
 - Upload preprocessed `.pk` ECG files
 - Sliding-window simulation of live ECG streams
 - CUDA-accelerated inference
-- Multi-label probability table with thresholds
-- Clinical decision support explanations per detected arrhythmia
+- Optimized per-class thresholds
+- Clinical decision-support explanations
 
-### Clinical Decision Support
+> Explanations are **assistive**, not autonomous diagnoses.
 
-Detected arrhythmias are accompanied by rule-based clinical interpretations, clearly labeled as **decision support**, not autonomous diagnosis.
+---
+
+## Hackathon Context
+
+- Strict time constraints
+- Solo participation
+- Limited hardware reliability
+- Emphasis on **end-to-end system completeness**
 
 ---
 
 ## Technology Stack
 
-- Python
-- PyTorch (CUDA / MPS support)
-- NumPy, Pandas, SciPy
-- scikit-learn
-- tqdm
-- wfdb
-- Streamlit
-- Matplotlib / Seaborn
+```
+# -------------------------------
+# Core Scientific Stack
+# -------------------------------
+numpy>=1.23
+pandas>=1.5
+scipy>=1.9
+matplotlib>=3.6
+seaborn>=0.12
+
+# -------------------------------
+# Machine Learning & Metrics
+# -------------------------------
+scikit-learn>=1.2
+imbalanced-learn>=0.10
+
+# -------------------------------
+# Deep Learning (CUDA-enabled)
+# -------------------------------
+torch>=2.0
+torchvision>=0.15
+torchaudio>=2.0
+
+# NOTE:
+# CUDA support is provided by the installed PyTorch build.
+# Install CUDA-specific wheels via:
+# https://pytorch.org/get-started/locally/
+
+# -------------------------------
+# ECG / Biomedical Signal Processing
+# -------------------------------
+wfdb>=4.1
+
+# -------------------------------
+# Progress Bars / UX
+# -------------------------------
+tqdm>=4.65
+
+# -------------------------------
+# Jupyter Environment (Optional but Used)
+# -------------------------------
+jupyter>=1.0
+ipykernel>=6.20
+
+# -------------------------------
+# Deployment
+# -------------------------------
+streamlit>=1.52
+```
 
 ---
 
-## Project Structure
+## Project Structure (Folder-Level)
 
-Ignite Hack/
-│
-├── app.py # Phase 5 real-time dashboard
-├── run_phase3.py # Training entry point
-├── src/
-│ ├── model.py # 1D CNN + ResNet + Attention
-│ ├── train.py # Training loop
-│ ├── evaluate.py # Multi-label metrics
-│ ├── ensemble.py # Ensemble inference
-│ ├── preprocessing.py
-│ ├── augmentation.py
-│
+```plaintext
+ECG-Decision-Support-System/
+├── app.py
+├── run_phase3.py
+├── ecg_model_v1.pth
+├── samples/
 ├── data/
-│ └── processed/
-│
 ├── notebooks/
-│ └── 01_eda.ipynb
-│
+├── src/
+├── experiments/
+├── requirements.txt
+├── split_train_into_train_val.py
 └── README.md
+
+```
+
+---
+
+## 🚀 Setup & Usage Guide
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone [https://github.com/Surya-Teja-Kancharla/ECG-Decision-Support-System.git](https://github.com/Surya-Teja-Kancharla/ECG-Decision-Support-System.git)
+cd ECG-DSS
+
+```
+
+### 2️⃣ Create & Activate Virtual Environment
+
+**Windows**
+
+```bash
+python -m venv ecg_env
+ecg_env\Scripts\activate
+
+```
+
+**Linux / macOS**
+
+```bash
+python3 -m venv ecg_env
+source ecg_env/bin/activate
+
+```
+
+### 3️⃣ Install Dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+
+```
+
+> CUDA support is automatically enabled if a CUDA-compatible PyTorch build is installed.
+
+### 4️⃣ Train the Model (Optional)
+
+```bash
+python run_phase3.py
+
+```
+
+> Requires full preprocessed dataset (not included in repo).
+
+### 5️⃣ Run the Streamlit App Locally
+
+```bash
+streamlit run app.py
+
+```
+
+> Upload a `.pk` ECG file from the `samples/` directory to test.
 
 ---
 
 ## Final Remarks
 
-This project demonstrates:
+ECG-DSS demonstrates:
 
-- Correct handling of multi-label ECG classification
-- Robust modeling under severe class imbalance
-- Clinically motivated validation strategies
-- A complete path from EDA → Model → Validation → Deployment
+* Correct multi-label ECG modeling
+* Robust handling of severe class imbalance
+* Clinically motivated validation strategies
+* A complete pipeline from EDA → Modeling → Validation → Deployment
 
-The system is suitable for **hackathon demos, academic evaluation, and prototype clinical decision-support pipelines**.
